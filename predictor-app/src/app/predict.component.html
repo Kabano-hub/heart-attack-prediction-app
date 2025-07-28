@@ -1,0 +1,118 @@
+<h1>Predykcja szansy zawału – projekt ML</h1>
+
+<section>
+  <h2>O projekcie</h2>
+  <p>
+    Strona prezentuje mój projekt uczenia maszynowego: klasyfikację ryzyka zawału serca na podstawie wybranych cech.
+  </p>
+</section>
+
+<section>
+  <h2>Wyniki i wizualizacje</h2>
+</section>
+
+<section>
+  <h2>Instrukcja obsługi</h2>
+  <ul>
+    <li>Opis kolejnych kroków projektu</li>
+  </ul>
+</section>
+
+<form (ngSubmit)="predict()" #form="ngForm">
+
+  <label>Wiek:
+    <input type="number" [(ngModel)]="inputData.age" name="age" required>
+  </label><br>
+
+  <label>Płeć:
+    <select [(ngModel)]="inputData.sex" name="sex" required>
+      <option value="male">Mężczyzna</option>
+      <option value="female">Kobieta</option>
+    </select>
+  </label><br>
+
+  <label>Typ bólu w klatce piersiowej (cp):
+    <select [(ngModel)]="inputData.cp" name="cp" required>
+      <option [value]="0">Typ 0</option>
+      <option [value]="1">Typ 1</option>
+      <option [value]="2">Typ 2</option>
+      <option [value]="3">Typ 3</option>
+    </select>
+  </label><br>
+
+  <label>Ciśnienie spoczynkowe (trestbps):
+    <input type="number" [(ngModel)]="inputData.trestbps" name="trestbps" required>
+  </label><br>
+
+  <label>Poziom cholesterolu (chol):
+    <input type="number" [(ngModel)]="inputData.chol" name="chol" required>
+  </label><br>
+
+  <label>Cukier na czczo > 120 mg/dl (fbs):
+    <select [(ngModel)]="inputData.fbs" name="fbs" required>
+      <option [value]="0">Nie</option>
+      <option [value]="1">Tak</option>
+    </select>
+  </label><br>
+
+  <label>EKG spoczynkowe (restecg):
+    <select [(ngModel)]="inputData.restecg" name="restecg" required>
+      <option [value]="0">Normalny</option>
+      <option [value]="1">Nieprawidłowość ST-T</option>
+      <option [value]="2">Przerost lewej komory</option>
+    </select>
+  </label><br>
+
+  <label>Maksymalne tętno (thalach):
+    <input type="number" [(ngModel)]="inputData.thalach" name="thalach" required>
+  </label><br>
+
+  <label>Ból przy wysiłku fizycznym (exang):
+    <select [(ngModel)]="inputData.exang" name="exang" required>
+      <option [value]="0">Nie</option>
+      <option [value]="1">Tak</option>
+    </select>
+  </label><br>
+
+  <label>Obniżenie ST (oldpeak):
+    <input type="number" [(ngModel)]="inputData.oldpeak" name="oldpeak" step="0.1" required>
+  </label><br>
+
+  <label>Nachylenie ST (slope):
+    <select [(ngModel)]="inputData.slope" name="slope" required>
+      <option [value]="0">Wznoszące</option>
+      <option [value]="1">Płaskie</option>
+      <option [value]="2">Opadające</option>
+    </select>
+  </label><br>
+
+  <label>Liczba głównych naczyń (ca):
+    <select [(ngModel)]="inputData.ca" name="ca" required>
+      <option [value]="0">0</option>
+      <option [value]="1">1</option>
+      <option [value]="2">2</option>
+      <option [value]="3">3</option>
+    </select>
+  </label><br>
+
+  <label>Thal:
+    <select [(ngModel)]="inputData.thal" name="thal" required>
+      <option value="normal">Normalny</option>
+      <option value="fixed defect">Stały defekt</option>
+      <option value="reversible defect">Odwracalny defekt</option>
+    </select>
+  </label><br><br>
+
+  <button type="submit" [disabled]="!form.valid">🔍 Sprawdź ryzyko</button>
+</form>
+
+<!-- Wynik -->
+<div *ngIf="result">
+  <h3>📊 Wynik predykcji</h3>
+  <p>
+    Predykcja: 
+    <strong *ngIf="result.prediction === 1">⚠️ Ryzyko zawału</strong>
+    <strong *ngIf="result.prediction === 0">✅ Brak ryzyka</strong>
+  </p>
+  <p>Prawdopodobieństwo: <strong>{{ result.probability * 100 | number:'1.0-2' }}%</strong></p>
+</div>

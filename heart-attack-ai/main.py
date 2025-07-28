@@ -55,7 +55,6 @@ X_train, X_test, y_train, y_test = train_test_split(
     X, y, stratify=y, test_size=0.2, random_state=42
 )
 
-# Przetwarzanie
 X_train_prep = preprocessor.fit_transform(X_train)
 X_test_prep = preprocessor.transform(X_test)
 
@@ -87,12 +86,30 @@ auc = roc_auc_score(y_test, grid.predict_proba(X_test_prep)[:,1])
 print(f'ROC AUC: {auc:.4f}')
 
 # Wykres ważności cech
-cat_names = preprocessor.named_transformers_['cat']['onehot'].get_feature_names_out(cat_features)
-feat_names = np.array(num_features + list(cat_names))
-importances = grid.best_estimator_.feature_importances_
-feat_imp_df = pd.DataFrame({'Feature': feat_names, 'Importance': importances}).sort_values(by='Importance', ascending=False)
+X_train_transformed = preprocessor.fit_transform(X_train)
 
+if cat_features:
+    ohe = preprocessor.named_transformers_['cat'].named_steps['onehot']
+    cat_feature_names = ohe.get_feature_names_out(cat_features)
+    feature_names = np.concatenate([num_features, cat_feature_names])
+else:
+    feature_names = np.array(num_features)
+
+# Oblicz feature importance
+importances = grid.best_estimator_.feature_importances_
+feat_imp_df = pd.DataFrame({
+    'Feature': feature_names,
+    'Importance': importances
+}).sort_values(by='Importance', ascending=False)
+
+# Wykres
 plt.figure(figsize=(12,6))
 sns.barplot(x='Importance', y='Feature', data=feat_imp_df.head(10))
 plt.title('Top 10 Important Features')
+plt.tight_layout()
 plt.show()
+
+import joblib
+joblib.dump(grid.best_estimator_, "rf_model.pkl")
+joblib.dump(preprocessor, "preprocessor.pkl")
+print("Zapisano modele!")
